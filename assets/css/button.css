@@ -1,0 +1,11 @@
+.el-button:hover {
+  background-color: #222;
+  color: white;
+  border-color: gray;
+}
+
+.el-button,
+.el-button:focus:not(:hover) {
+  color: gray;
+  background-color: white;
+}
