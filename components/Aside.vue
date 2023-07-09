@@ -18,16 +18,16 @@ async function init() {
     // 获取当前用户聊天主题记录
     const token = useCookie('lin-token')
     const { data: subjectResult } = await useFetch(
-  `${apiBase}/lin_chat/subject/subjects`,
-  {
-    method: 'GET',
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-expect-error
-    pick: ['result'],
-    headers: {
-      Authorization: `Bearer ${token.value}`,
-    },
-  },
+      `${apiBase}/lin_chat/subject/subjects`,
+      {
+        method: 'GET',
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-expect-error
+        pick: ['result'],
+        headers: {
+          Authorization: `Bearer ${token.value}`,
+        },
+      },
     )
     subjects = (subjectResult.value as Response<Result<ChatTopic>>).result.list
     loading.value = false
@@ -107,7 +107,13 @@ function selectChatSubject(id: string, index: number) {
   })
   chatStore.setSubjectId(id)
 }
-
+function getImages() {
+  const http = new Http()
+  http.get(`${apiBase}/lin_chat/generate_image/get_images`).then((res) => {
+    chatStore.setImageList(res.result.list)
+    console.log('🚀 ~ file: Aside.vue:114 ~ http.get ~ res.result.list:', res.result.list)
+  })
+}
 // const svg = loadingSVG
 </script>
 
@@ -138,7 +144,7 @@ function selectChatSubject(id: string, index: number) {
               </button>
             </a>
           </div>
-          <el-divider m-1 h-1 />
+          <el-divider class="m-1 h-1" />
         </div>
         <!-- 聊天记录结束 -->
         <!-- 图片生成 -->
@@ -151,15 +157,12 @@ function selectChatSubject(id: string, index: number) {
             class="myScroller w-full flex flex-col overflow-y-auto"
           >
             <!-- 将a中的两个标签水平对齐 -->
-            <a v-for="(item, index) in chatStore.getSubjectList" :key="item.id" class="flex flex-row items-center justify-between" :class="index === chatStore.getActive ? 'active' : ''" :title="item.title" @click="selectChatSubject(item.id, index)">
+            <a class="flex flex-row items-center" @click="getImages">
               <div i="carbon-chat" />
-              <span>{{ item.title }}</span>
-              <button class="text-gray-400 hover:text-gray-50" @click.stop="deleteMessage(item.id)">
-                <div i="carbon-trash-can" />
-              </button>
+              <span>生成图片</span>
             </a>
           </div>
-          <el-divider m-1 h-1 />
+          <el-divider class="m-1 h-1" />
         </div>
         <!-- 聊天记录结束 -->
         <!-- 功能区开始 -->
@@ -182,10 +185,14 @@ function selectChatSubject(id: string, index: number) {
 
 <style lang="postcss" scoped>
 a {
-  @apply duration-200 transition-colors text-sm p-3 border border-cool-gray-400 rounded-md gap-3 items-center cursor-pointer flex-shrink-0 mb-1 text-white hover:bg-dark-200;
+  @apply duration-200 transition-colors text-sm p-3 border border-cool-gray-400 rounded-md gap-3 items-center cursor-pointer flex-shrink-0 mb-1 text-white hover: bg-dark-200;
 }
 
 .active {
   @apply bg-dark-100;
+}
+
+.el-divider--horizontal {
+  margin: 2px 0;
 }
 </style>

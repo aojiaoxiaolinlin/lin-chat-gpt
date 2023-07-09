@@ -346,6 +346,7 @@ watch(() => getChatRecord.value, () => {
 }, {
   deep: true,
 })
+const getImageList = computed(() => chatStore.getImageList)
 // 监控content高度
 watch(
   () => recordList,

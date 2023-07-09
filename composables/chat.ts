@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import type { MessageRecord } from '~/types/communications'
-import type { ChatTopic } from '~/types/response'
+import type { ChatTopic, Image } from '~/types/response'
 
 export const useChatStore = defineStore('chat', {
   state: () => ({
@@ -10,6 +10,7 @@ export const useChatStore = defineStore('chat', {
     subjectList: [] as ChatTopic[],
     active: -1,
     messagesLoading: false,
+    imageList: [] as Image[],
   }),
   actions: {
     setChatRecord(record: any[]) {
@@ -45,6 +46,9 @@ export const useChatStore = defineStore('chat', {
     setMessageLoading(loading: boolean) {
       this.messagesLoading = loading
     },
+    setImageList(imageList: Image[]) {
+      this.imageList = imageList
+    },
   },
   getters: {
     getChatRecord: state => state.chatRecord,
@@ -53,5 +57,6 @@ export const useChatStore = defineStore('chat', {
     getSubjectList: state => state.subjectList,
     getActive: state => state.active,
     getMessageLoading: state => state.messagesLoading,
+    getImageList: state => state.imageList,
   },
 })

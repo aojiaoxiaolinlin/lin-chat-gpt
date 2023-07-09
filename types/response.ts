@@ -22,3 +22,12 @@ export interface ChatTopic {
   title: string
   createTime?: string
 }
+
+export interface Image {
+  id: string
+  imageId: string
+  imageUrl: string
+  model: number
+  prompt: string
+  createTime: string
+}
