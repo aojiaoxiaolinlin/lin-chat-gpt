@@ -1,8 +1,8 @@
-import type { RecordList } from '~/types/communications'
+import type { ChatMessage } from '~/types/communications'
 
 // Read the stream from the server
 export async function read(reader: any,
-  target: RecordList): Promise<any> {
+  target: ChatMessage[]): Promise<any> {
   // TextDecoder is a built-in object that allows you to convert a stream of bytes into a string
   const decoder = new TextDecoder('utf-8')
   // Destructure the value returned by reader.read()
@@ -12,7 +12,7 @@ export async function read(reader: any,
     return reader.releaseLock()
   // Convert the stream of bytes into a string
   const chunk = decoder.decode(value, { stream: true })
-  target.items[target.items.length - 1].delta.content += chunk
+  target[target.length - 1].answer.content += chunk
   // Repeat the process
   return read(reader, target)
 }

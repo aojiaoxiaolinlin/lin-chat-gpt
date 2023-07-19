@@ -17,9 +17,7 @@ function fetch(url: string, options?: any): Promise<any> {
   const customApiKey = useCookie('accessToken')
   if (customApiKey.value)
     options.headers.CustomApiKey = `CustomApiKey ${customApiKey.value}`
-  const {
-    public: { apiBase },
-  } = useRuntimeConfig() // 3.0正式版环境变量要从useRuntimeConfig里的public拿
+  const { public: { apiBase } } = useRuntimeConfig() // 3.0正式版环境变量要从useRuntimeConfig里的public拿
   // 如果url前面有http或https,则不拼接apiBase
   let reqUrl = ''
   if (url.startsWith('http') || url.startsWith('https'))
@@ -49,6 +47,7 @@ function fetch(url: string, options?: any): Promise<any> {
             message: '网络错误',
           })
         }
+        const userStore = useMyUserStore()
         switch ((value as any).code) {
           case ResultCode.SUCCESS:
             resolve(value)
@@ -69,12 +68,12 @@ function fetch(url: string, options?: any): Promise<any> {
             reject(new Error((value as Response<null>).message || '验证码已过期'))
             break
           case ResultCode.UNAUTHENTICATED:
-            // const userStore = useUserStore()
             // 401处理
             nextTick(() => {
               ElMessage.error((value as Response<null>).message || '请登录')
             })
             reject(new Error((value as Response<null>).message || '请登录'))
+            userStore.setIsLogging(false)
             break
           case ResultCode.EMAIL_NOT_EXISTS:
             await nextTick()

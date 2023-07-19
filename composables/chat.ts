@@ -1,20 +1,41 @@
 import { defineStore } from 'pinia'
-import type { MessageRecord } from '~/types/communications'
-import type { ChatTopic, Image } from '~/types/response'
+import type { ChatImage, ChatMessage, Image, MessageRecord } from '~/types/communications'
+import type { ChatTopic } from '~/types/response'
 
 export const useChatStore = defineStore('chat', {
   state: () => ({
-    chatRecord: [] as MessageRecord[],
+    chatMessage: [] as ChatMessage[],
     subjectId: '' as string,
-    parentMessageId: '0' as string,
+    parentMessageId: '-1' as string,
     subjectList: [] as ChatTopic[],
-    active: -1,
     messagesLoading: false,
-    imageList: [] as Image[],
+    imageList: [] as ChatImage[],
   }),
   actions: {
     setChatRecord(record: any[]) {
-      this.chatRecord = record
+      this.chatMessage = record
+      // 定位最后一个元素
+      this.parentMessageId = this.chatMessage[this.chatMessage.length - 1].answer.id
+    },
+    reSetChatRecord() {
+      this.chatMessage = []
+    },
+    addChatRecord(question: MessageRecord, answer: MessageRecord) {
+      this.chatMessage.push({ question, answer })
+    },
+    modifyChatRecord(content: string, messageId: string) {
+      let index = 0
+      for (let i = 0; i < this.getChatMessage.length; i++) {
+        if (this.getChatMessage[i].question.id === messageId) {
+          index = i
+          break
+        }
+      }
+      this.chatMessage[index].question.content = content
+      this.chatMessage.splice(index + 1, this.chatMessage.length - index - 1)
+    },
+    clearLastMessage() {
+      this.chatMessage[this.chatMessage.length - 1].answer.content = ''
     },
     setSubjectId(subjectId: string) {
       this.subjectId = subjectId
@@ -24,6 +45,16 @@ export const useChatStore = defineStore('chat', {
     },
     setSubjectList(subjectList: ChatTopic[]) {
       this.subjectList = subjectList
+    },
+    addImage(question: MessageRecord, answer: Image) {
+      this.imageList.push({ question, answer })
+    },
+    onReceiveMessage(message: any) {
+      const last = this.imageList.length - 1
+      this.imageList[last].answer.imageUrl = message.imageUrl
+      this.imageList[last].answer.imageId = message.imageId
+      this.imageList[last].answer.createTime = message.createTime
+      this.imageList[last].answer.actions = message.actions
     },
     addSubject(item: ChatTopic) {
       // 判断是否subjectList是否初始化
@@ -40,22 +71,18 @@ export const useChatStore = defineStore('chat', {
         }
       }
     },
-    setActive(index: number) {
-      this.active = index
-    },
     setMessageLoading(loading: boolean) {
       this.messagesLoading = loading
     },
-    setImageList(imageList: Image[]) {
+    setImageList(imageList: ChatImage[]) {
       this.imageList = imageList
     },
   },
   getters: {
-    getChatRecord: state => state.chatRecord,
+    getChatMessage: state => state.chatMessage,
     getSubjectId: state => state.subjectId,
     getParentMessageId: state => state.parentMessageId,
     getSubjectList: state => state.subjectList,
-    getActive: state => state.active,
     getMessageLoading: state => state.messagesLoading,
     getImageList: state => state.imageList,
   },

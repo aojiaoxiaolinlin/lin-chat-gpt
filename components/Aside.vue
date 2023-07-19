@@ -9,7 +9,6 @@ const chatStore = useChatStore()
 const { public: { apiBase } } = useRuntimeConfig()
 
 let subjects: ChatTopic[] = []
-const subjectId = useCookie('subjectId')
 const loading = ref(false)
 // await init()
 async function init() {
@@ -39,37 +38,24 @@ onMounted(async () => {
 
   chatStore.setSubjectList(subjects as ChatTopic[])
 
-  if (userStore.getLogging)
-    getMessageOnFlash()
+  // if (userStore.getLogging)
+  // getMessageOnFlash()
   // 读取本地缓存
-  chatStore.setActive(Number(localStorage.getItem('active')) >= 0 ? Number(localStorage.getItem('active')) : -1)
   window.onbeforeunload = () => {
     // localStorage.setItem('subjectId', chatStore.getSubjectId)
-    localStorage.setItem('active', chatStore.getActive.toString())
     const subjectId = useCookie('subjectId')
     subjectId.value = chatStore.getSubjectId
   }
 })
-function getMessageOnFlash() {
-  // const subjectId = localStorage.getItem('subjectId')
-  if (subjectId.value) {
-    chatStore.setMessageLoading(true)
-    chatStore.setSubjectId(subjectId.value)
-    const http = new Http()
-    http.get(`${apiBase}/lin_chat/message/messages/${subjectId.value}`).then((res) => {
-      chatStore.setChatRecord(res.result.list)
-      chatStore.setMessageLoading(false)
-    })
-  }
-}
 chatStore.setSubjectList(subjects as ChatTopic[])
+const router = useRouter()
 function newChat() {
   const subjectId = generateUUID()
 
   chatStore.setParentMessageId('0')
   chatStore.setSubjectId(subjectId)
-  chatStore.setChatRecord([])
-  chatStore.setActive(-1)
+  chatStore.reSetChatRecord()
+  router.push({ path: '/' })
 }
 function closeMenu() {
   appStore.changeExpandStatus()
@@ -85,7 +71,6 @@ function deleteMessage(id: string) {
       loading.value = false
     })
   })
-  chatStore.setActive(-1)
   chatStore.setChatRecord([])
   chatStore.setParentMessageId('0')
   chatStore.setSubjectId('')
@@ -95,24 +80,6 @@ function openDialog() {
 }
 function getPrompt() {
   appStore.changePrompt()
-}
-// 选择聊天主题获取对应的聊天记录
-function selectChatSubject(id: string, index: number) {
-  chatStore.setActive(index)
-  chatStore.setMessageLoading(true)
-  const http = new Http()
-  http.get(`${apiBase}/lin_chat/message/messages/${id}`).then((res) => {
-    chatStore.setChatRecord(res.result.list)
-    chatStore.setMessageLoading(false)
-  })
-  chatStore.setSubjectId(id)
-}
-function getImages() {
-  const http = new Http()
-  http.get(`${apiBase}/lin_chat/generate_image/get_images`).then((res) => {
-    chatStore.setImageList(res.result.list)
-    console.log('🚀 ~ file: Aside.vue:114 ~ http.get ~ res.result.list:', res.result.list)
-  })
 }
 // const svg = loadingSVG
 </script>
@@ -127,7 +94,7 @@ function getImages() {
           </a>
         </div>
         <!-- 聊天记录开始 -->
-        <div class="w-full flex flex-col overflow-y-auto">
+        <div class="h-2/5 w-full flex flex-col overflow-y-auto">
           <span class="text-xl font-400 text-warm-gray-100">聊天记录</span>
           <div
             v-loading="loading"
@@ -136,13 +103,13 @@ function getImages() {
             class="myScroller w-full flex flex-col overflow-y-auto"
           >
             <!-- 将a中的两个标签水平对齐 -->
-            <a v-for="(item, index) in chatStore.getSubjectList" :key="item.id" class="flex flex-row items-center justify-between" :class="index === chatStore.getActive ? 'active' : ''" :title="item.title" @click="selectChatSubject(item.id, index)">
+            <NuxtLink v-for="item in chatStore.getSubjectList" :key="item.id" class="flex flex-row items-center justify-between" active-class="active" :title="item.title" :to="`/${item.id}`">
               <div i="carbon-chat" />
               <span>{{ item.title }}</span>
               <button class="text-gray-400 hover:text-gray-50" @click.stop="deleteMessage(item.id)">
                 <div i="carbon-trash-can" />
               </button>
-            </a>
+            </NuxtLink>
           </div>
           <el-divider class="m-1 h-1" />
         </div>
@@ -151,16 +118,13 @@ function getImages() {
         <div class="mb-26 w-full flex flex-col overflow-y-auto">
           <span class="text-xl font-400 leading-12 text-warm-gray-100">图片生成</span>
           <div
-            v-loading="loading"
-            element-loading-text="加载中..."
-            element-loading-background="rgba(122, 122, 122, 0.8)"
             class="myScroller w-full flex flex-col overflow-y-auto"
           >
             <!-- 将a中的两个标签水平对齐 -->
-            <a class="flex flex-row items-center" @click="getImages">
+            <NuxtLink class="flex flex-row items-center" to="/imageGen" active-class="active">
               <div i="carbon-chat" />
               <span>生成图片</span>
-            </a>
+            </NuxtLink>
           </div>
           <el-divider class="m-1 h-1" />
         </div>
@@ -185,7 +149,7 @@ function getImages() {
 
 <style lang="postcss" scoped>
 a {
-  @apply duration-200 transition-colors text-sm p-3 border border-cool-gray-400 rounded-md gap-3 items-center cursor-pointer flex-shrink-0 mb-1 text-white hover: bg-dark-200;
+  @apply duration-200 transition-colors text-sm p-3 border border-cool-gray-400 rounded-md gap-3 items-center cursor-pointer flex-shrink-0 mb-1 text-white hover:bg-dark-200;
 }
 
 .active {

@@ -10,8 +10,10 @@ export default defineNuxtConfig({
       chatCompletionUserApi: '/chat/messageUseUserApi',
       chatMessage: '/chat/chatMessage',
       modifyMessage: '/chat/modifyMessage',
-      apiBase: 'https://chat.linlin.online',
-      // apiBase: 'http://localhost:8080',
+      // apiBase: 'https://chat.linlin.online',
+      // wsBase: 'wss://chat.linlin.online',
+      apiBase: 'http://localhost:8080',
+      wsBase: 'ws://localhost:8080',
     },
   },
   modules: [

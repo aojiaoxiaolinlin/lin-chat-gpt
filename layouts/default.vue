@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { FormInstance, FormRules, TabsPaneContext } from 'element-plus'
+import { type FormInstance, type FormRules, type TabsPaneContext } from 'element-plus'
 import type { ChatTopic, Response, Result, SingleResult } from '~/types/response'
 import type { LinToken } from '~/types/tokens'
 import type { UserInfo } from '~/types/user'
@@ -9,14 +9,19 @@ const appStore = useAppStore()
 const userStore = useMyUserStore()
 const chatStore = useChatStore()
 const loginDialog = ref(true)
+const isLogin = computed(() => userStore.getLogging)
+watch(isLogin, (newValue, _oldValue) => {
+  if (newValue)
+    loginDialog.value = false
+  else
+    loginDialog.value = true
+})
 const { public: { apiBase } } = useRuntimeConfig()
 let userInfo: UserInfo = { id: '', username: '', avatar: '', email: '', createTime: '' }
-// await init()
 async function init() {
   const token = useCookie('lin-token')
   if (token.value) {
     userStore.setIsLogging(true)
-    loginDialog.value = !userStore.getLogging
     userStore.setToken(token.value)
   }
   if (userStore.getLogging) {
@@ -47,8 +52,11 @@ async function init() {
 }
 onMounted(async () => {
   await init()
-  if (userInfo)
+  if (userInfo) {
     userStore.setUserInfo(userInfo)
+    const userId = useCookie('userId')
+    userId.value = userInfo.id
+  }
 })
 
 const formRef = ref<FormInstance>()
@@ -78,12 +86,13 @@ async function submitForm(formEl: FormInstance | undefined) {
         userStore.setToken(resp.result['lin-token'].tokenValue)
         localStorage.setItem('lin-token', userStore.getToken)
         const token = useCookie('lin-token')
-
+        localStorage.setItem('userId', userStore.getUserInfo.id)
+        const userId = useCookie('userId')
+        userId.value = userStore.getUserInfo.id
         token.value = userStore.getToken
         userStore.setUserInfoId(resp.result['lin-token'].loginId)
         userStore.setIsLogging(resp.result['lin-token'].isLogin)
         // 重置选中
-        chatStore.setActive(-1)
         // 登录成功获取用户信息
         getUserInfo()
         // 获取主题
@@ -226,7 +235,8 @@ async function submitRegister(formEl: FormInstance | undefined) {
   <ClientOnly>
     <el-dialog
       v-model="loginDialog" title="登录注册"
-      align-center :close-on-press-escape="false"
+      align-center
+      :close-on-press-escape="false"
       :close-on-click-modal="false"
       :show-close="false"
       center
