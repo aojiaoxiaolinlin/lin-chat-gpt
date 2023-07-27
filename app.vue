@@ -24,9 +24,15 @@ html, body , #__nuxt{
   font-weight: 600;
   font-size: 16px;
 }
+@media screen and (max-width: 760px){
+  html,body,#__nuxt{
+    font-size: 14px;
+    font-weight: 500;
+  }
+}
 
 html.dark {
-  background: #222;
+  background: #222222;
   color: white;
 }
 </style>

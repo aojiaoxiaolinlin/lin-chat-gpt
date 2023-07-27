@@ -24,8 +24,9 @@ function showMenu() {
     <div class="flex flex-none items-center gap-2">
       <span text="2xl">{{ userStore.userInfo.username }}</span>
       <div class="h-10 w-10 overflow-hidden border-rd-9 md:h-12 md:w-12">
-        <img :src="userStore.getLogging ? `http://localhost:3000/_nuxt/assets/images/head.jpg` : 'http://localhost:3000/_nuxt/assets/svg/header.svg'" alt="头像">
+        <img src="~/assets/images/head.jpg" alt="头像">
       </div>
+      <DarkToggle />
     </div>
   </div>
 </template>

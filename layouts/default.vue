@@ -235,11 +235,10 @@ async function submitRegister(formEl: FormInstance | undefined) {
   <ClientOnly>
     <el-dialog
       v-model="loginDialog" title="登录注册"
-      align-center
       :close-on-press-escape="false"
       :close-on-click-modal="false"
       :show-close="false"
-      center
+      center align-center
       class="dialog"
     >
       <el-tabs v-model="activeName" class="demo-tabs" @tab-click="handleClick">

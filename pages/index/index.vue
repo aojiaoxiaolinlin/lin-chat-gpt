@@ -1,5 +1,10 @@
 <script setup lang="ts">
-
+useHead({
+  title: 'ChatGPT聊天问答',
+  meta: [
+    { hid: 'description', name: 'description', content: 'ChatGPT问答页面,来这里提问交流,ChatGPT会给你最好的回答。' },
+  ],
+})
 </script>
 
 <template>

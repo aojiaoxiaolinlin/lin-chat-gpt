@@ -3,6 +3,12 @@ import { WebSocketBean } from 'tools-vue3'
 import Http from '~/utils/http'
 import ReLoad from '~/components/ReLoad.vue'
 
+useHead({
+  title: 'Midjourney图片生成',
+  meta: [
+    { hid: 'description', name: 'description', content: 'Midjourney图片生成页面，来这里生成你想要的图片' },
+  ],
+})
 const chatStore = useChatStore()
 const { public: { apiBase, wsBase } } = useRuntimeConfig()
 let ws: WebSocketBean
@@ -106,7 +112,6 @@ function handlerAction(imageId: string, act: string) {
   chatStore.addImage(
     { id: generateUUID(), content: `${act} : ${imageId}`, role: 'user', subjectId: '0000', parentMessageId: '0000' },
     { id: '1111', prompt: '', imageId, imageUrl: '', model: 1, createTime: '' })
-  console.log(imageId, act)
   const http = new Http()
   http.get(`/lin_chat/generate_image/handler_image?imageId=${imageId}&action=${act}`)
     .then((res) => {
@@ -165,7 +170,7 @@ function handlerAction(imageId: string, act: string) {
             </svg>
           </div>
           <li class="inline-block max-w-8/10 w-max rounded-lg bg-gray-100 px-3 py-2 dark:bg-dark">
-            <el-image :src="item.answer.imageUrl" :preview-src-list="[item.answer.imageUrl]" :alt="item.question.content" class="w-150">
+            <el-image :src="item.answer.imageUrl" :preview-src-list="[item.answer.imageUrl]" :alt="item.question.content" class="w-50 md:w-150">
               <template #error>
                 <div class="image-slot">
                   <el-icon><ElIconPictureFilled /></el-icon>
@@ -245,9 +250,11 @@ function handlerAction(imageId: string, act: string) {
   color: var(--el-text-color-secondary);
   font-size: 30px;
 }
+
 .image-slot .el-icon {
   font-size: 30px;
 }
+
 .el-image__inner {
   width: 37.5rem !important;
 }
