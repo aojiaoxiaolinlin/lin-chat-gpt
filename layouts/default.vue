@@ -86,9 +86,6 @@ async function submitForm(formEl: FormInstance | undefined) {
         userStore.setToken(resp.result['lin-token'].tokenValue)
         localStorage.setItem('lin-token', userStore.getToken)
         const token = useCookie('lin-token')
-        localStorage.setItem('userId', userStore.getUserInfo.id)
-        const userId = useCookie('userId')
-        userId.value = userStore.getUserInfo.id
         token.value = userStore.getToken
         userStore.setUserInfoId(resp.result['lin-token'].loginId)
         userStore.setIsLogging(resp.result['lin-token'].isLogin)
@@ -119,6 +116,9 @@ function getUserInfo() {
     const resp = res as Response<SingleResult<UserInfo>>
     userStore.setUserInfo(resp.result.item)
     userStore.setUserInfoId(resp.result.item.id)
+    localStorage.setItem('userId', userStore.getUserInfo.id)
+    const userId = useCookie('userId')
+    userId.value = userStore.getUserInfo.id
   }).catch((err) => {
     switch (err.message) {
       case '401':
