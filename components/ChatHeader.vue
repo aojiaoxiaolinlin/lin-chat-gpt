@@ -32,29 +32,15 @@ function showMenu() {
 </template>
 
 <style>
-  .dialog {
-    width: 50% !important;
-  }
-  @media screen and (max-width:600px) {
-    .dialog {
-      width: 90% !important;
-    }
-  }
 </style>
 
-<style lang="postcss" scoped>
+<style scoped>
 .menuCtl {
   display: none;
-}
-.dialog  {
-  width: 50% !important;
 }
 @media screen and (max-width:600px) {
   .menuCtl {
     display: flex;
-  }
-  .dialog  {
-    width: 90% !important;
   }
 }
 </style>

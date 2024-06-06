@@ -239,7 +239,7 @@ async function submitRegister(formEl: FormInstance | undefined) {
       :close-on-click-modal="false"
       :show-close="false"
       center align-center
-      class="dialog"
+      class="w-90%! md:w-30%!"
     >
       <el-tabs v-model="activeName" class="demo-tabs" @tab-click="handleClick">
         <el-tab-pane label="登录" name="login">

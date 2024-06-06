@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { WebSocketBean } from 'tools-vue3'
 import Http from '~/utils/http'
-import ReLoad from '~/components/ReLoad.vue'
 
 useHead({
   title: 'Midjourney图片生成',
@@ -34,7 +33,6 @@ onMounted(() => {
     heartSend: 'heartbeat',
     heartGet: 'heartbeat',
     onopen: () => {
-      console.log('连接成功')
       return Promise.resolve()
     },
     onerror: () => {
@@ -132,23 +130,6 @@ function handlerAction(imageId: string, act: string) {
       <div v-for="(item, index) in chatStore.getImageList" :key="index" class="px-3 py-2">
         <!-- 问 -->
         <div class="question mb-2">
-          <ClientOnly>
-            <el-dropdown class="custom-align">
-              <span class="el-dropdown-link">
-                <button class="i-carbon-overflow-menu-vertical align-bottom" />
-              </span>
-              <template #dropdown>
-                <el-dropdown-menu>
-                  <el-dropdown-item :icon="ElIconEdit" @click="modifyQuestion(item.question.id, item.question.content)">
-                    修改
-                  </el-dropdown-item>
-                  <el-dropdown-item :icon="ElIconCopyDocument" @click="copy(item.question.content)">
-                    复制
-                  </el-dropdown-item>
-                </el-dropdown-menu>
-              </template>
-            </el-dropdown>
-          </ClientOnly>
           <li
             class="mt-1.5 inline-block max-w-8/10 w-max rounded-lg bg-sky-500 px-3 py-2 text-left align-top text-warm-gray-100 dark:bg-gray-8"
           >
@@ -187,9 +168,9 @@ function handlerAction(imageId: string, act: string) {
               <template #dropdown>
                 <div>
                   <el-dropdown-menu>
-                    <el-dropdown-item :icon="ReLoad" @click="handlerStopOrRestart()">
-                      重新请求
-                    </el-dropdown-item>
+                    <!-- <el-dropdown-item :icon="ReLoad" @click="handlerStopOrRestart()"> -->
+                    <!-- 重新请求 -->
+                    <!-- </el-dropdown-item> -->
                     <el-dropdown-item :icon="ElIconCopyDocument" @click="copy(item.answer.imageUrl)">
                       复制链接
                     </el-dropdown-item>

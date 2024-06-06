@@ -11,12 +11,7 @@ const token = route.query.token
 
 const { data: validResult } = await useFetch(
   `${apiBase}/lin_chat/valid_code/verifyEmail?email=${email}&token=${token}`,
-  {
-    method: 'GET',
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-expect-error
-    pick: ['message', 'code'],
-  },
+  { method: 'GET' },
 )
 const result = (validResult.value as Response<SingleResult<null>>)
 const router = useRouter()
